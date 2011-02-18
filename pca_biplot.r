@@ -4,7 +4,7 @@ require(ggplot2)
 
 
 # PCA Biplot
-pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE,...) { 
+pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE, plot.loadings = TRUE,...) { 
 	argList<-list(...)
 
 	# Handle input
@@ -28,14 +28,14 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE,...)
 
 
 	# as.data.frame(FAP_Functional.pc$loadings[])
-	
-	loads = as.data.frame(loads[]/sd(loads)[1])
-	print(loads)
 
+	loads = as.data.frame(loads[]*lam*0.01)
+
+	# Use load.scale to scale loads
 	if( !is.null(argList$load.scale)) {
 		load.scale = argList$load.scale
 		# loads = as.data.frame(t(t(loads)*lam*load.scale))
-		loads = as.data.frame(t(t(loads)*loadscale))
+		loads = as.data.frame(t(t(loads)*load.scale))
 	}
 
 	# Trick to make plot work
@@ -54,13 +54,16 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE,...)
 	# paste('Canonical scores, FULL, cor = ',format(cc_full$cor[1],digits = 4))
 
 
-	# The plottin part
+	# The plotting part
 	require(ggplot2); 
 	# quartz()
 	p <- ggplot(data = scores,aes(0,0))
 
-	# Add Arrows
-	p <- p + geom_segment(data = loads, aes(xend = Comp.1,yend = Comp.2),arrow=arrow(length=unit(0.2,"cm")),color='red',alpha = I(1/3),size = 1) 	# Plot loadings Arrows
+	# # Add Loadings
+	if(plot.loadings){
+		p <- p + geom_segment(data = loads, aes(xend = Comp.1,yend = Comp.2),arrow=arrow(length=unit(0.2,"cm")),color='red',alpha = I(1/3),size = 1) +	# Plot loadings Arrows
+		geom_text(data = loads, aes(x = Comp.1*1.1,y = Comp.2*1.1, label = labels ), angle=30)	# Text till loadings
+	}
 
 	# Add scores and colouring of scores
 	if(plot.scores){
@@ -83,7 +86,9 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE,...)
 	if( !is.null(argList$text.labels)){
 		if( !is.null(argList$colour)){
 			scores$color = argList$colour
-		}  
+		} else {
+			scores$color = 'grey80'
+		}
 		scores$text.labels = argList$text.labels
 		p <- p + geom_text(aes(x = Comp.1,y = Comp.2, label = text.labels, colour = color),data = scores)
 	}
@@ -102,7 +107,6 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE,...)
 	}
 
 	p <- p + 
-	geom_text(data = loads, aes(x = Comp.1*1.1,y = Comp.2*1.1, label = labels ), angle=30) +	# Text till loadings
 	geom_hline(yintercept = 0,colour = 'grey50') +					# Axlar genom origo
 	geom_vline(xintercept = 0,colour = 'grey50') +
 	scale_x_continuous(paste("Comp.",choices[1],prop1, sep = '')) + # Set up axis labels
