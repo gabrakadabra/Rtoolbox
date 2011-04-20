@@ -4,11 +4,9 @@ require(ggplot2)
 
 # Screeplot i paretochart form
 scree_pareto <- function(x){ 
+	# Input: x <- princomp(data)
 	# Screeplot, för att se variansproportionen, ges av Egenvärderna summary(x)$sdev^2 = eigen(cor(x))
-	
-	
-	
-	
+
 	sdev  <- as.data.frame(x$sdev^2/sum(x$sdev^2))
 	names(sdev) <- 'dev'
 	sdev$dev2 <- reorder(as.factor(rownames(sdev)),1:dim(sdev)[1]) #Fixa levels i rätt ordning
@@ -16,7 +14,7 @@ scree_pareto <- function(x){
 
 	main = paste('Screeplot', substitute(x))
 
-	# Plotting
+	# Set up plot
 	p <- ggplot(data = sdev, aes(x= dev2))
 	p <- p + geom_bar(aes(x = dev2, y = dev, fill = dev2)) + 
 	geom_line(aes(y = cum, group = 1), colour = 'red') +
@@ -27,6 +25,8 @@ scree_pareto <- function(x){
 	ylab('Explained') + 
 	theme_bw()
 	
+	# plot
 	p
+	# return plot
 	return(p)
 }

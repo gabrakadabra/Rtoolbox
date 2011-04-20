@@ -3,18 +3,25 @@
 require(ggplot2)
 
 # Ålderskorringering av data
-agecor <- function(data, age, center_age, plot = FALSE){	
+agecor <- function(data, age, center_age, plot = FALSE, ... ){	
+	argList<-list(...)
+	
+	if( !is.null(argList$subSet)) {
+		subSet = argList$subSet
+	} else {
+		subSet = TRUE
+	}
 	
 	if(is.data.frame(data)){
 		corrected_data <- data.frame()
 		for (i in dim(data)[2]) {
-			linear_model = lm(data[,i]~age)
+			linear_model = lm(data[subSet,i]~age[subSet])
 			c_data = data - linear_model$coeff[2]*(age-center_age)
 			corrected_data = c_data
 		}
 	} 
 	else {
-		linear_model = lm(data~age)
+		linear_model = lm(data[subSet]~age[subSet])
 		corrected_data = data - linear_model$coeff[2]*(age-center_age)
 	}
 
@@ -30,6 +37,8 @@ agecor <- function(data, age, center_age, plot = FALSE){
 		geom_smooth(aes(y = data, colour = 'Not corrected'),method="lm", se = F) + 
 		geom_point(aes(y = corrected_data, colour = 'Corrected')) + 
 		geom_smooth(aes(y = corrected_data , colour = 'Corrected'), method="lm", se = F) + 
+		xlab(substitute(age)) + 
+		ylab(substitute(data)) + 
 		opts(title = 'Age correction') + labs(colour="Corrected/Not corrected")
 		print(k)
 	}
