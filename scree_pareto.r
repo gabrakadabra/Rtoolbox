@@ -3,7 +3,7 @@
 require(ggplot2)
 
 # Screeplot i paretochart form
-scree_pareto <- function(x){ 
+scree_pareto <- function(x, fillBars = TRUE, xlab = 'Components', scale = 1){ 
 	# Input: x <- princomp(data)
 	# Screeplot, för att se variansproportionen, ges av Egenvärderna summary(x)$sdev^2 = eigen(cor(x))
 
@@ -16,12 +16,16 @@ scree_pareto <- function(x){
 
 	# Set up plot
 	p <- ggplot(data = sdev, aes(x= dev2))
-	p <- p + geom_bar(aes(x = dev2, y = dev, fill = dev2)) + 
-	geom_line(aes(y = cum, group = 1), colour = 'red') +
+	if(fillBars){
+		p <- p + geom_bar(aes(x = dev2, y = dev, fill = dev2))
+		} 
+	else{ p <- p + geom_bar(aes(x = dev2, y = dev), colour = 'grey20', fill = 'white')
+		} 
+	p <- p + geom_line(aes(y = cum, group = 1), colour = 'red') +
 	geom_point(aes(y = cum,), colour = 'red') + 
 	geom_hline(aes(yintercept = 0.95), colour = 'grey40', linetype = 2) + 
 	opts(title = main)	+
-	xlab('Components') + 
+	xlab( xlab ) + 
 	ylab('Explained') + 
 	theme_bw()
 	

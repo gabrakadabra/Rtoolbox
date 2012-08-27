@@ -4,12 +4,12 @@
 
 require(ggplot2)
 
-corplot <- function(x, subTitle = '', ...) {
+corplot <- function(x, subTitle = '', correlationMethod = 'pearson',...) {
 	argList<-list(...)
 
 
 	#Make the correlation matrix
-	(x.s <- cor(x))
+	(x.s <- cor(x, method = correlationMethod))
 
 	# same with p-values, then use symnum() to represent the values as asterisks
 	cor.pval <- function(x, alternative="two-sided", ...) {
@@ -71,7 +71,8 @@ corplot <- function(x, subTitle = '', ...) {
 
 
 	# Manage subtitle
-	theTitle = paste('Correlations',subTitle,sep = '\n')
+	mainTitle = paste('Correlations', correlationMethod)
+	theTitle = paste(mainTitle,subTitle,sep = '\n')
 
 	p2 + xlab(NULL) + ylab(NULL) +
 	opts(axis.text.x= theme_blank()) +
@@ -83,11 +84,10 @@ corplot <- function(x, subTitle = '', ...) {
 }
 
 
-corplot2 <- function(x,y) {
+corplot2 <- function(x, y, subTitle = '', correlationMethod = 'pearson', ...) {
 	#Make the correlation matrix
-	(x.s <- cor(x,y))
+	(x.s <- cor(x,y, method = correlationMethod))
 
-	(x.s <- cor(EKO2,HRV2))
 	# # same with p-values, then use symnum() to represent the values as asterisks
 	cor.pval <- function(x,y, alternative="two-sided", ...) {
 
@@ -138,11 +138,13 @@ corplot2 <- function(x,y) {
 	# scale_x_discrete(limits=meas[length(meas):1]) + #flip the x axis
 	scale_y_discrete(limits=meas)
 
+	# Manage subtitle
+	mainTitle = paste('Correlations', correlationMethod)
+	theTitle = paste(mainTitle,subTitle,sep = '\n')
+	
 	p2 + xlab(NULL) + ylab(NULL) +
 	opts(axis.ticks= theme_blank()) +
 	opts(panel.border= theme_blank()) +
 	opts(legend.position='none') +
-	opts(title="Correlations")
+	opts(title = theTitle)
 }
-
-

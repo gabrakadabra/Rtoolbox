@@ -65,7 +65,7 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE, plo
 		geom_text(data = loads, aes(x = Comp.1*1.1,y = Comp.2*1.1, label = labels ), angle=30)	# Text till loadings
 	}
 
-	# Add scores and colouring of scores
+	# Add scores , pch and colouring of scores
 	if(plot.scores){
 		if( is.null(argList$colour)){
 			p <- p + geom_point(aes(x = Comp.1,y = Comp.2),data = scores,alpha = I(2/3))
@@ -92,7 +92,7 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE, plo
 		scores$text.labels = argList$text.labels
 		p <- p + geom_text(aes(x = Comp.1,y = Comp.2, label = text.labels, colour = color),data = scores)
 	}
-
+	
 	# Rug
 	if( !is.null(argList$colour)){
 		p <- p + geom_rug(data= scores, aes(x = Comp.1, y = Comp.2, colour = color))
@@ -100,6 +100,7 @@ pca_biplot <- function(x, choices = 1L:2L, main = 'PCA', plot.scores = TRUE, plo
 
 	# Ellipse
 	if( !is.null(argList$ellipse)){
+		require(geozoo)
 		ellip <- ellipsoid(.1,.2,100)
 		print(ellip)
 		p <- p + geom_point(data <- ellip, mapping <- aes(x = x, y = y))
