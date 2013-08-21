@@ -1,4 +1,6 @@
 require(ggplot2)
+require(reshape2)
+
 
 nna <- function(x, col = TRUE) {
 	if (col) nNA <- colSums(is.na(x))	
@@ -13,11 +15,14 @@ nna <- function(x, col = TRUE) {
 plotNA <-  function(indata) {
 	data_NA <- is.na(indata)
 	data_NA_m <- melt(data_NA)
-	(p <- ggplot(data_NA_m, aes(as.factor(X1), X2)) + geom_tile(aes(fill = factor(value)),colour = 'white') + scale_fill_manual('Is NA?',values = alpha(c("blue", "red"), 0.5))) +
-	opts(title = paste('NA in:',opts(title = substitute(indata)))) + 
-	opts(axis.text.x= theme_blank()) +
-	opts(axis.ticks= theme_blank()) +
-	opts(panel.border= theme_blank()) +
-	opts(legend.position='none') + 
-	theme_bw()
+	names(data_NA_m) <- c('X1','X2','X3')
+	(p <- ggplot(data_NA_m, aes(x = as.factor(X1), y = X2)) + 
+	   geom_tile(aes(fill = factor(X3)),colour = 'white'))+ 
+# 	   scale_fill_manual('Is NA?',values = alpha(c("blue", "red"), 0.5))) +
+# 	  ggtitle(label=paste('NA in:',opts(title = substitute(indata)))) + 
+	  theme(axis.text.x= element_blank()) +
+	  theme(axis.ticks= element_blank()) +
+	  theme(panel.border= element_blank()) +
+	  theme(legend.position='none') + 
+	  theme_bw()
 }
