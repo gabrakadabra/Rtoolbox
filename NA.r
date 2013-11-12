@@ -2,13 +2,15 @@ require(ggplot2)
 require(reshape2)
 
 
-nna <- function(x, col = TRUE) {
-	if (col) nNA <- colSums(is.na(x))	
-	else nNA <- rowSums(is.na(x))
-
+nna <- function(x, col = TRUE, silent = F) {
+	if (col){nNA <- colSums(is.na(x))}
+	else {nNA <- rowSums(is.na(x))}
+		
+	if (!silent){
 	tmo2 <- data.frame(nNA)
 	tmo2$nAviable <- (dim(x)[1] - tmo2)[,]
 	print(tmo2)
+	}
 	return(nNA)
 }
 
@@ -24,5 +26,6 @@ plotNA <-  function(indata) {
 	  theme(axis.ticks= element_blank()) +
 	  theme(panel.border= element_blank()) +
 	  theme(legend.position='none') + 
+	  labs(y = '', x = 'id', fill = 'Is NA') + 
 	  theme_bw()
 }
